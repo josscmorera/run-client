@@ -1,15 +1,18 @@
 const { Axios } = require("axios")
 
+const API_KEY = process.env.TMDB_API_KEY
 const API_BASE = 'https://api.themoviedb.org/3'
-const API_KEY = 'd5a7cd6a4dad81c336cd89aa19c3bb62'
 
 const API_MOVIE_EN = `${API_BASE}/movie/{{id}}?language=en&append_to_response=credits&api_key=${API_KEY}`
 const API_MOVIE_VIDEOS = `${API_BASE}/movie/{{id}}/videos?&api_key=${API_KEY}`
+
+const API_POPULAR_MOVIES = `${API_BASE}/discover/movie?include_video=true&language=en-US&page=1&sort_by=popularity.desc&api_key=${API_KEY}`
 
 
  const getDataFilm = async (tmdbId) => {
   try {
     const dataMovie = await Axios.get(API_MOVIE_EN.replace('{{id}}', tmdbId))
+    
     const dataVideo = await Axios.get(
       API_MOVIE_VIDEOS.replace('{{id}}', tmdbId)
     )
@@ -44,4 +47,14 @@ const prepareVideos = videos => {
   return newVideos || []
 }
 
-module.exports = { getDataFilm };
+const getPopularMovies = async () => {
+  try {
+    const data = await Axios.get(API_POPULAR_MOVIES)
+    return await Promise.all( data.data.results.map(async item => getDataFilm(item.id)))
+  } catch (error) {
+    console.error('Error Popular Movies', error)
+    throw error
+  }
+}
+
+module.exports = { getDataFilm, getPopularMovies };

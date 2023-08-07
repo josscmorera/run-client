@@ -1,5 +1,5 @@
 const Movie = require('../model/movie');
-const { getDataFilm } = require('../utils/getTMDBData');
+const { getDataFilm, getPopularMovies } = require('../utils/getTMDBData');
 
 const createMovie = async (req, res) => {
     try {
@@ -104,4 +104,21 @@ const deleteMovie = async (req, res) => {
     }
 }
 
-module.exports = { createMovie, getMovie, getAllMovies, updateMovie, deleteMovie };
+const createPopularMovies = async (req, res) => {
+    try {
+        const popularMoviesData = await getPopularMovies();
+
+        if (!popularMoviesData) {
+            return res.status(400).json({ success: false, message: "Error getting popular movies" });
+        }
+
+        const newMovies = await Movie.insertMany(popularMoviesData);
+      } catch (error) {
+        return res.status(400).json({ success: false, message: err.message });
+      }
+}
+
+
+
+
+module.exports = { createMovie, getMovie, getAllMovies, updateMovie, deleteMovie, createPopularMovies };
