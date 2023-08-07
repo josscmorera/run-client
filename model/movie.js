@@ -4,11 +4,13 @@ const {v4: uuidv4} = require('uuid');
 const movieSchema = new mongoose.Schema({
     _id : { type: String, default: uuidv4 },
     title: { type: String, required: true },
-    poster_image: { type: String, required: true },
-    backdrop_image: { type: String },
+    posterImage: { type: String, required: true },
+    backdropImage: { type: String },
     overview: {type: String},
     trailer: {type: String},
     releaseDate: { type: Date },
+    runTime: { type: Number },
+    tmdbId: { type: Number },
 
     rating: {type: Number},
     

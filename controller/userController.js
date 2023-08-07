@@ -20,7 +20,7 @@ const createUser = async (req, res) => {
         const newUser =  new User(userInfo);
         const savedUser = await newUser.save();
 
-        const token = jwt.sign({ id: savedUser._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ id: savedUser._id }, process.env.SECRET_KEY, { expiresIn: '1d' });
 
         return res.status(200).json({ success: true, data: savedUser, token });
     }
@@ -35,7 +35,6 @@ const loginUser = async (req, res) => {
 
         const foundUser = await User.findOne({ email });
 
-        console.log(foundUser)
 
         if (!foundUser) {
             return res.status(400).json({ success: false, message: "Invalid email or password" });
@@ -43,14 +42,13 @@ const loginUser = async (req, res) => {
 
         const isPasswordValid = await bcrypt.compare(password, foundUser.password);
 
-        console.log(isPasswordValid)
 
         if (!isPasswordValid) {
             return res.status(400).json({ success: false, message: "Invalid email or password" });
         }
 
         // Generate a token and send it back to the user
-        const token = jwt.sign({ id: foundUser._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ id: foundUser._id }, process.env.SECRET_KEY, { expiresIn: '1d' });
 
         return res.status(200).json({ success: true, data: foundUser, token: token });
     } catch (err) {
