@@ -20,7 +20,7 @@ const createUser = async (req, res) => {
         const newUser =  new User(userInfo);
         const savedUser = await newUser.save();
 
-        const token = jwt.sign({ id: savedUser._id }, process.env.SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign({ id: savedUser._id, isAdmin: savedUser.isAdmin }, process.env.SECRET_KEY, { expiresIn: '1d' });
 
         return res.status(200).json({ success: true, data: savedUser, token });
     }
@@ -48,7 +48,7 @@ const loginUser = async (req, res) => {
         }
 
         // Generate a token and send it back to the user
-        const token = jwt.sign({ id: foundUser._id }, process.env.SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign({ id: foundUser._id, isAdmin: savedUser.isAdmin }, process.env.SECRET_KEY, { expiresIn: '1d' });
 
         return res.status(200).json({ success: true, data: foundUser, token: token });
     } catch (err) {
