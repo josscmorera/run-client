@@ -13,9 +13,11 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/admin');
 var movieRouter = require('./routes/movie');
+const { createUserAdmin } = require('./utils/createUserAdmin');
 
 var app = express();
 
+createUserAdmin(); // create admin user if not exists
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
