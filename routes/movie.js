@@ -10,14 +10,17 @@ const {
   createPopularMovies 
 } = require('../controller/movieController');
 
+const { checkIfEmpty } = require('../utils/checkIfEmpty');
+const { jwtValidateAdmin } = require('../utils/jwtValidate');
+
 var router = express.Router();
 
-router.get('/', getAllMovies);
-router.post('/new', createMovie);
+router.get('/',  getAllMovies);
 router.get('/:id', getMovie);
-router.put('/:id', updateMovie);
-router.delete('/:id', deleteMovie);
-router.post('/populars/import', createPopularMovies);
+router.post('/new', jwtValidateAdmin, checkIfEmpty, createMovie);
+router.put('/:id', jwtValidateAdmin, checkIfEmpty, updateMovie);
+router.delete('/:id', jwtValidateAdmin, deleteMovie);
+router.post('/populars/import', jwtValidateAdmin, createPopularMovies);
 
 
 module.exports = router;
