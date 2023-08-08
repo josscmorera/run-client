@@ -106,14 +106,22 @@ const deleteMovie = async (req, res) => {
 
 const createPopularMovies = async (req, res) => {
     try {
-        const popularMoviesData = await getPopularMovies();
+        var popularMoviesData = await getPopularMovies();
+        console.log(popularMoviesData[0])
+        const existMovies = await Movie.find({});
 
         if (!popularMoviesData) {
             return res.status(400).json({ success: false, message: "Error getting popular movies" });
         }
 
+        if (existMovies.length > 0) {
+            popularMoviesData = popularMoviesData.filter(item => !existMovies.some(existItem => existItem.tmdbId === item.tmdbId));
+        }
+
         const newMovies = await Movie.insertMany(popularMoviesData);
-      } catch (error) {
+
+        return res.status(200).json({ success: true, data: newMovies });
+      } catch (err) {
         return res.status(400).json({ success: false, message: err.message });
       }
 }

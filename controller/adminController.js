@@ -18,7 +18,7 @@ const createAdmin = async (req, res) => {
         const newUser =  new User(userInfo);
         const savedUser = await newUser.save();
 
-        const token = jwt.sign({ id: savedUser._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ id: savedUser._id, isAdmin: savedUser.isAdmin }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         return res.status(200).json({ success: true, data: savedUser, token });
     }
@@ -46,11 +46,12 @@ const loginAdmin = async (req, res) => {
         }
 
         // Generate a token and send it back to the user
-        const token = jwt.sign({ id: foundUser._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ id: foundUser._id, isAdmin: savedUser.isAdmin }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         return res.status(200).json({ success: true, data: foundUser, token: token });
     } catch (err) {
         return res.status(500).json({ success: false, message: err.message });
     }
 }
+
 module.exports = {  createAdmin, loginAdmin };

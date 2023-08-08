@@ -1,4 +1,4 @@
-const { Axios } = require("axios")
+const Axios  = require("axios")
 
 const API_KEY = process.env.TMDB_API_KEY
 const API_BASE = 'https://api.themoviedb.org/3'
@@ -22,9 +22,9 @@ const API_POPULAR_MOVIES = `${API_BASE}/discover/movie?include_video=true&langua
     const data = {
       title:  movieDataEn.original_title,
       overview: movieDataEn.overview,
-      posterPath: movieDataEn.poster_path,
-      backdropPath:  movieDataEn.backdrop_path,
-      trailer: prepareVideos(dataVideo.data)[0],
+      posterImage: movieDataEn.poster_path,
+      backdropImage:  movieDataEn.backdrop_path,
+      trailer: prepareTrailer(dataVideo.data),
       runTime:  movieDataEn.runtime,
       releaseDate: movieDataEn.release_date,
       genres: movieDataEn.genres,
@@ -39,12 +39,12 @@ const API_POPULAR_MOVIES = `${API_BASE}/discover/movie?include_video=true&langua
   }
 }
 
-const prepareVideos = videos => {
+const prepareTrailer = videos => {
   const newVideos =
     videos &&
     videos.results.filter(item => item.site === 'YouTube').map(item => item.key)
 
-  return newVideos || []
+  return newVideos[0] ? newVideos[0] : ''
 }
 
 const getPopularMovies = async () => {
