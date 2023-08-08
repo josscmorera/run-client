@@ -11,7 +11,7 @@ const checkIfEmpty = (req, res, next) => {
     if (Object.keys(errObj).length > 0) {
         return res.status(400).json({ success: false, message: "error", errors: errObj });
     } else {
-        next();
+        return next();
     }
 }
 
