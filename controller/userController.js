@@ -48,7 +48,7 @@ const loginUser = async (req, res) => {
         }
 
         // Generate a token and send it back to the user
-        const token = jwt.sign({ id: foundUser._id, isAdmin: savedUser.isAdmin }, process.env.SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign({ id: foundUser._id, isAdmin: foundUser.isAdmin }, process.env.SECRET_KEY, { expiresIn: '1d' });
 
         return res.status(200).json({ success: true, data: foundUser, token: token });
     } catch (err) {
@@ -56,10 +56,10 @@ const loginUser = async (req, res) => {
     }
 }
 
-const validateUser = (req, res, next) => {
+const validateUser = async (req, res, next) => {
     try {
         const decodedToken = res.locals.decodedToken
-        const findUser = User.findOne({_id: decodedToken.id})
+        const findUser = await User.findOne({_id: decodedToken.id})
 
         if(!findUser){
             return res.status(400).json({success: false, message: "Invalid token"})
@@ -77,7 +77,9 @@ const addMovieFavorite = async (req, res) => {
 
     
         const decodedToken = res.locals.decodedToken
-        const findUser = User.findOne({_id: decodedToken.id})
+        const findUser = await User.findOne({_id: decodedToken.id})
+
+        console.log(findUser)
 
         const existFavorite = findUser.favorites.find(favorite => favorite === movieId)
 
@@ -92,6 +94,7 @@ const addMovieFavorite = async (req, res) => {
         return res.status(200).json({ success: true, data: savedUser });
 
     } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: "Error adding movie to favorites", error: error });
     }
 }
@@ -101,7 +104,7 @@ const removeMovieFavorite = async (req, res) => {
         const { movieId } = req.body;
 
         const decodedToken = res.locals.decodedToken
-        const findUser = User.findOne({_id: decodedToken.id})
+        const findUser = await User.findOne({_id: decodedToken.id})
         
         const favoriteIndex = findUser.favorites.findIndex(favorite => favorite === movieId)
 
@@ -112,7 +115,7 @@ const removeMovieFavorite = async (req, res) => {
             
             return res.status(200).json({ success: true, data: savedUser });
         }
-        
+
         return res.status(400).json({ success: false, message: "Movie not exists in favorites" });
     } catch (error) {
         return res.status(400).json({ success: false, message: "Error removing movie from favorites", error: error });

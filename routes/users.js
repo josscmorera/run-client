@@ -6,8 +6,8 @@ const { createUser, loginUser, validateUser, addMovieFavorite, removeMovieFavori
 
 var router = express.Router();
 
-router.post('/new', checkIfEmpty, validateUserData,createUser);
-router.post('/login', checkIfEmpty,  loginUser);
+router.post('/new', checkIfEmpty, validateUserData, createUser);
+router.get('/login', checkIfEmpty,  loginUser);
 router.get('/validate', jwtValidate, validateUser);
 
 router.put('/favorite/add', jwtValidate, checkIfEmpty, addMovieFavorite);

@@ -14,11 +14,15 @@ const movieSchema = new mongoose.Schema({
 
     rating: {type: Number},
     
-    ratings: {
+    ratings: [{
       userId: {type: String},
       rating: {type: Number},
+    }],
+
+    comments: [{
+      userId: {type: String},
       comment: {type: String},
-    },
+    }],
 
     lastModified: { type: Date, default: Date.now },
     createAt: { type: Date, default: Date.now },
