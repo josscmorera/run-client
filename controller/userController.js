@@ -71,5 +71,53 @@ const validateUser = (req, res, next) => {
     }
 }
 
+const addMovieFavorite = async (req, res) => {
+    try {
+        const { movieId } = req.body;
 
-module.exports = { createUser, loginUser, validateUser };
+    
+        const decodedToken = res.locals.decodedToken
+        const findUser = User.findOne({_id: decodedToken.id})
+
+        const existFavorite = findUser.favorites.find(favorite => favorite === movieId)
+
+        if(existFavorite){
+            return res.status(400).json({ success: false, message: "Movie already exists in favorites" });
+        }
+
+        findUser.favorites.push(movieId)
+
+        const savedUser = await findUser.save()
+
+        return res.status(200).json({ success: true, data: savedUser });
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Error adding movie to favorites", error: error });
+    }
+}
+
+const removeMovieFavorite = async (req, res) => {
+    try {
+        const { movieId } = req.body;
+
+        const decodedToken = res.locals.decodedToken
+        const findUser = User.findOne({_id: decodedToken.id})
+        
+        const favoriteIndex = findUser.favorites.findIndex(favorite => favorite === movieId)
+
+        if(favoriteIndex !== -1) {
+            findUser.favorites.splice(favoriteIndex, 1)
+            
+            const savedUser = await findUser.save()
+            
+            return res.status(200).json({ success: true, data: savedUser });
+        }
+        
+        return res.status(400).json({ success: false, message: "Movie not exists in favorites" });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Error removing movie from favorites", error: error });
+    }
+}
+
+
+module.exports = { createUser, loginUser, validateUser, addMovieFavorite, removeMovieFavorite };
