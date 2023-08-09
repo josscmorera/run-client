@@ -9,9 +9,8 @@ const jwtValidate = (req, res, next) => {
             const decodedToken = jwt.verify(slicedToken, process.env.SECRET_KEY)
 
             if(decodedToken){
-                console.log('Decoded Token:', decodedToken);
                 res.locals.decodedToken = decodedToken
-                next()
+                return next()
             }
         }
 
@@ -32,7 +31,6 @@ const jwtValidateAdmin = (req, res, next) => {
                 if (!decodedToken.isAdmin) {
                     return res.status(400).json({ success: false, message: "You are not authorized to access this route" });
                 }
-                console.log('Decoded Token:', decodedToken);
                 res.locals.decodedToken = decodedToken
                 return next()
             }

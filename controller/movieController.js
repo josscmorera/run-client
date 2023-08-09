@@ -1,4 +1,6 @@
 const Movie = require('../model/movie');
+const User = require('../model/user');
+
 const { getDataFilm, getPopularMovies } = require('../utils/getTMDBData');
 
 const createMovie = async (req, res) => {
@@ -16,8 +18,8 @@ const createMovie = async (req, res) => {
 
         return res.status(200).json({ success: true, data: savedMovie });
     }
-    catch (err) {
-        return res.status(400).json({ success: false, message: err.message });
+    catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
     }
 }
 
@@ -33,8 +35,8 @@ const getMovie = async (req, res) => {
 
         return res.status(200).json({ success: true, data: foundMovie });
     }
-    catch (err) {
-        return res.status(400).json({ success: false, message: err.message });
+    catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
     }
 }
 
@@ -48,8 +50,8 @@ const getAllMovies = async (req, res) => {
 
         return res.status(200).json({ success: true, data: foundMovies });
     }
-    catch (err) {
-        return res.status(400).json({ success: false, message: err.message });
+    catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
     }
 }
 
@@ -78,8 +80,8 @@ const updateMovie = async (req, res) => {
 
         return res.status(200).json({ success: true, data: savedMovie });
     }
-    catch (err) {
-        return res.status(400).json({ success: false, message: err.message });
+    catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
     }
 }
 
@@ -100,7 +102,7 @@ const deleteMovie = async (req, res) => {
 
 
     } catch (error) {
-      return res.status(400).json({ success: false, message: err.message });
+      return res.status(400).json({ success: false, message: error.message });
     }
 }
 
@@ -121,12 +123,117 @@ const createPopularMovies = async (req, res) => {
         const newMovies = await Movie.insertMany(popularMoviesData);
 
         return res.status(200).json({ success: true, data: newMovies });
-      } catch (err) {
-        return res.status(400).json({ success: false, message: err.message });
+      } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
       }
 }
 
+const addRatingMovie = async (req, res) => {
+    try {
+        const {  rating } = req.body;
+        const { id } = req.params;
 
+        const decodedToken = res.locals.decodedToken
+        const findUser = await User.findOne({_id: decodedToken.id})
 
+        const movie = await Movie.findOne({ _id: id });
 
-module.exports = { createMovie, getMovie, getAllMovies, updateMovie, deleteMovie, createPopularMovies };
+        if (!movie) {
+            return res.status(400).json({ success: false, message: "Movie not found" });
+        }
+
+        const existRating = movie.ratings.find(rating => rating.userId === decodedToken.id)
+
+        if(existRating){
+            return res.status(400).json({ success: false, message: "You already rated this movie" });
+        }
+
+        movie.ratings.push({userId: findUser._id, rating})
+
+        movie.rating = movie.ratings.reduce((acc, item) => acc + item.rating, 0) / movie.ratings.length
+
+        const savedMovie = await movie.save()
+
+        return res.status(200).json({ success: true, data: savedMovie });
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+const updateRatingMovie = async (req, res) => {
+    try {
+        const {  rating } = req.body;
+        const { id } = req.params;
+
+        const decodedToken = res.locals.decodedToken
+        const findUser = await User.findOne({_id: decodedToken.id})
+
+        const movie = await Movie.findOne({ _id: id });
+
+        if (!movie) {
+            return res.status(400).json({ success: false, message: "Movie not found" });
+        }
+
+        const ratingIndex = movie.ratings.findIndex(rating => rating.userId === findUser._id)
+
+        if(ratingIndex === -1){
+            return res.status(400).json({ success: false, message: "You have not rated this movie" });
+        }
+
+        movie.ratings[ratingIndex].rating = rating
+
+        movie.rating = movie.ratings.reduce((acc, item) => acc + item.rating, 0) / movie.ratings.length
+
+        const savedMovie = await movie.save()
+
+        return res.status(200).json({ success: true, data: savedMovie });
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+const removeRatingMovie = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const decodedToken = res.locals.decodedToken
+        const findUser = await User.findOne({_id: decodedToken.id})
+
+        const movie = await Movie.findOne({ _id: id });
+
+        if (!movie) {
+            return res.status(400).json({ success: false, message: "Movie not found" });
+        }
+
+        const ratingIndex = movie.ratings.findIndex(rating => rating.userId === findUser._id)
+
+        if(ratingIndex === -1){
+            return res.status(400).json({ success: false, message: "You have not rated this movie" });
+        }
+
+        movie.ratings.splice(ratingIndex, 1)
+
+        movie.rating = movie.ratings.length > 0 ? movie.ratings.reduce((acc, item) => acc + item.rating, 0) / movie.ratings.length : 0
+
+        const savedMovie = await movie.save()
+
+        return res.status(200).json({ success: true, data: savedMovie });
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+module.exports = { 
+    createMovie, 
+    getMovie, 
+    getAllMovies, 
+    updateMovie, 
+    deleteMovie, 
+    createPopularMovies, 
+    addRatingMovie, 
+    updateRatingMovie, 
+    removeRatingMovie 
+};
