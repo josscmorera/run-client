@@ -10,7 +10,10 @@ const {
   createPopularMovies, 
   addRatingMovie,
   updateRatingMovie,
-  removeRatingMovie
+  removeRatingMovie,
+  addCommentMovie,
+  updateCommentMovie,
+  removeCommentMovie
 } = require('../controller/movieController');
 
 const { checkIfEmpty } = require('../utils/checkIfEmpty');
@@ -28,6 +31,11 @@ router.post('/populars/import', jwtValidateAdmin, createPopularMovies);
 router.put('/:id/rating/add', jwtValidate, checkIfEmpty, addRatingMovie);
 router.put('/:id/rating/update', jwtValidate, checkIfEmpty, updateRatingMovie);
 router.put('/:id/rating/remove', jwtValidate, removeRatingMovie);
+
+router.put('/:id/comment/add', jwtValidate, checkIfEmpty, addCommentMovie);
+router.put('/:id/comment/:commentId/update', jwtValidate, checkIfEmpty, updateCommentMovie);
+router.put('/:id/comment/:commentId/remove', jwtValidate, removeCommentMovie);
+
 
 
 

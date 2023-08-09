@@ -20,8 +20,10 @@ const movieSchema = new mongoose.Schema({
     }],
 
     comments: [{
+      _id : { type: String, default: uuidv4 },
       userId: {type: String},
       comment: {type: String},
+      createdAt: {type: Date, default: Date.now},
     }],
 
     lastModified: { type: Date, default: Date.now },

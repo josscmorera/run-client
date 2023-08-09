@@ -226,6 +226,93 @@ const removeRatingMovie = async (req, res) => {
     }
 }
 
+const addCommentMovie = async (req, res) => {
+    try {
+        const { comment } = req.body;
+        const { id } = req.params;
+
+        const decodedToken = res.locals.decodedToken
+        const findUser = await User.findOne({_id: decodedToken.id})
+
+        const movie = await Movie.findOne({ _id: id });
+
+        if (!movie) {
+            return res.status(400).json({ success: false, message: "Movie not found" });
+        }
+
+        movie.comments.push({userId: findUser._id, comment})
+
+        const savedMovie = await movie.save()
+
+        return res.status(200).json({ success: true, data: savedMovie });
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+const updateCommentMovie = async (req, res) => {
+    try {
+        const { comment } = req.body;
+        const { id, commentId } = req.params;
+
+        const decodedToken = res.locals.decodedToken
+        const findUser = await User.findOne({_id: decodedToken.id})
+
+        const movie = await Movie.findOne({ _id: id });
+
+        if (!movie) {
+            return res.status(400).json({ success: false, message: "Movie not found" });
+        }
+
+        const commentIndex = movie.comments.findIndex(comment => comment._id === commentId && comment.userId === findUser._id)
+
+        if(commentIndex === -1){
+            return res.status(400).json({ success: false, message: "You have not rated this movie" });
+        }
+
+        movie.comments[commentIndex].comment = comment
+
+
+        const savedMovie = await movie.save()
+
+        return res.status(200).json({ success: true, data: savedMovie });
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
+const removeCommentMovie = async (req, res) => {
+    try {
+        const { id, commentId } = req.params;
+
+        const decodedToken = res.locals.decodedToken
+        const findUser = await User.findOne({_id: decodedToken.id})
+
+        const movie = await Movie.findOne({ _id: id });
+
+        if (!movie) {
+            return res.status(400).json({ success: false, message: "Movie not found" });
+        }
+
+        const commentIndex = movie.comments.findIndex(comment => comment.userId === findUser._id && comment._id === commentId)
+
+        if(commentIndex === -1){
+            return res.status(400).json({ success: false, message: "You have not rated this movie" });
+        }
+
+        movie.comments.splice(commentIndex, 1)
+
+        const savedMovie = await movie.save()
+
+        return res.status(200).json({ success: true, data: savedMovie });
+
+    } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+    }
+}
+
 module.exports = { 
     createMovie, 
     getMovie, 
@@ -235,5 +322,8 @@ module.exports = {
     createPopularMovies, 
     addRatingMovie, 
     updateRatingMovie, 
-    removeRatingMovie 
+    removeRatingMovie,
+    addCommentMovie,
+    updateCommentMovie,
+    removeCommentMovie
 };
