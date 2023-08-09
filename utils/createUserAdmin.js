@@ -1,5 +1,4 @@
 const User = require('../model/user');
-const bcrypt = require('bcrypt');
 
 const createUserAdmin = async () => {
     try {
@@ -7,7 +6,7 @@ const createUserAdmin = async () => {
         if(!user){
 
           const salt = await bcrypt.genSalt(10);
-          const hash = await bcrypt.hash(process.env.USER_ADMIN_PASS, salt);
+          const hash =  await bcrypt.hash(process.env.USER_ADMIN_PASS, salt);
           
             const newUser = new User({
                 firstName: "Admin",
