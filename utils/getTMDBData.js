@@ -20,7 +20,7 @@ const API_POPULAR_MOVIES = `${API_BASE}/discover/movie?include_video=true&langua
     const movieDataEn = dataMovie.data
 
     const data = {
-      title:  movieDataEn.original_title,
+      title:  movieDataEn.title,
       overview: movieDataEn.overview,
       posterImage: movieDataEn.poster_path,
       backdropImage:  movieDataEn.backdrop_path,

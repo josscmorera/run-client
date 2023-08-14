@@ -133,6 +133,7 @@ const addRatingMovie = async (req, res) => {
         const {  rating } = req.body;
         const { id } = req.params;
 
+
         const decodedToken = res.locals.decodedToken
         const findUser = await User.findOne({_id: decodedToken.id})
 
@@ -240,7 +241,7 @@ const addCommentMovie = async (req, res) => {
             return res.status(400).json({ success: false, message: "Movie not found" });
         }
 
-        movie.comments.push({userId: findUser._id, comment})
+        movie.comments.push({userId: findUser._id, comment, userName: findUser.firstName })
 
         const savedMovie = await movie.save()
 
