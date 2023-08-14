@@ -1,4 +1,5 @@
 const User = require('../model/user');
+const Movie = require('../model/movie');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -65,7 +66,7 @@ const validateUser = async (req, res, next) => {
             return res.status(400).json({success: false, message: "Invalid token"})
         }
         
-        return res.status(200).json({success: true, email: findUser.email})
+        return res.status(200).json({success: true, data: findUser})
     } catch (error) {
         return res.status(400).json({ success: false, message: "Invalid token", error: error });
     }
@@ -122,5 +123,18 @@ const removeMovieFavorite = async (req, res) => {
     }
 }
 
+const listFavorites = async (req, res) => {
+    try {
+        const decodedToken = res.locals.decodedToken
+        const findUser = await User.findOne({_id: decodedToken.id})
 
-module.exports = { createUser, loginUser, validateUser, addMovieFavorite, removeMovieFavorite };
+        const favorites = await Movie.find({ _id: { $in: findUser.favorites } })
+
+        return res.status(200).json({ success: true, data: favorites });
+    } catch (error) {
+        return res.status(400).json({ success: false, message: "Error listing favorites", error: error });
+    }
+}
+
+
+module.exports = { createUser, loginUser, validateUser, addMovieFavorite, removeMovieFavorite, listFavorites };

@@ -26,7 +26,8 @@ router.get('/:id', getMovie);
 router.post('/new', jwtValidateAdmin, checkIfEmpty, createMovie);
 router.put('/:id', jwtValidateAdmin, checkIfEmpty, updateMovie);
 router.delete('/:id', jwtValidateAdmin, deleteMovie);
-router.post('/populars/import', jwtValidateAdmin, createPopularMovies);
+
+router.post('/populars/import',  createPopularMovies);
 
 router.put('/:id/rating/add', jwtValidate, checkIfEmpty, addRatingMovie);
 router.put('/:id/rating/update', jwtValidate, checkIfEmpty, updateRatingMovie);

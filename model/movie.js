@@ -12,7 +12,15 @@ const movieSchema = new mongoose.Schema({
     runTime: { type: Number },
     tmdbId: { type: Number },
 
-    rating: {type: Number},
+    rating: {
+      type: Number,
+      default: 0,
+    },
+
+    genres: [{
+      _id : { type: String, default: uuidv4 },
+      name: {type: String},
+    }],
     
     ratings: [{
       userId: {type: String},
@@ -22,6 +30,7 @@ const movieSchema = new mongoose.Schema({
     comments: [{
       _id : { type: String, default: uuidv4 },
       userId: {type: String},
+      userName: {type: String},
       comment: {type: String},
       createdAt: {type: Date, default: Date.now},
     }],
