@@ -1,5 +1,6 @@
 const User = require('../model/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const createAdmin = async (req, res) => {
     try {
@@ -47,7 +48,7 @@ const loginAdmin = async (req, res) => {
         }
 
         // Generate a token and send it back to the user
-        const token = jwt.sign({ id: foundUser._id, isAdmin: savedUser.isAdmin }, process.env.SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ id: foundUser._id, isAdmin: foundUser.isAdmin }, process.env.SECRET_KEY, { expiresIn: '1h' });
 
         return res.status(200).json({ success: true, data: foundUser, token: token });
     } catch (err) {
