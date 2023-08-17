@@ -7,7 +7,7 @@ const {
   getAllMovies, 
   updateMovie, 
   deleteMovie, 
-  createPopularMovies, 
+  createLastMovies, 
   addRatingMovie,
   updateRatingMovie,
   removeRatingMovie,
@@ -27,7 +27,7 @@ router.post('/new', jwtValidateAdmin, checkIfEmpty, createMovie);
 router.put('/:id', jwtValidateAdmin, checkIfEmpty, updateMovie);
 router.delete('/:id', jwtValidateAdmin, deleteMovie);
 
-router.post('/populars/import',  createPopularMovies);
+router.post('/', jwtValidateAdmin, createLastMovies);
 
 router.put('/:id/rating/add', jwtValidate, checkIfEmpty, addRatingMovie);
 router.put('/:id/rating/update', jwtValidate, checkIfEmpty, updateRatingMovie);

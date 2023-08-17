@@ -17,7 +17,7 @@ const createUserAdmin = async () => {
                 isAdmin: true,
             });
             await newUser.save();
-            console.log("Admin user created");
+            console.log("Admin user was created");
         }
 return 
    } catch (error) {
