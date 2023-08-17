@@ -1,7 +1,7 @@
 const Movie = require('../model/movie');
 const User = require('../model/user');
 
-const { getDataFilm, getPopularMovies } = require('../utils/getTMDBData');
+const { getDataFilm, getLastMovies } = require('../utils/getTMDBData');
 
 const createMovie = async (req, res) => {
     try {
@@ -42,7 +42,7 @@ const getMovie = async (req, res) => {
 
 const getAllMovies = async (req, res) => {
     try {
-        const foundMovies = await Movie.find({});
+        const foundMovies = await Movie.find({}).sort({releaseDate: -1});
 
         if (!foundMovies) {
             return res.status(400).json({ success: false, message: "Movies not found" });
@@ -106,10 +106,9 @@ const deleteMovie = async (req, res) => {
     }
 }
 
-const createPopularMovies = async (req, res) => {
+const createLastMovies = async (req, res) => {
     try {
-        var popularMoviesData = await getPopularMovies();
-        console.log(popularMoviesData[0])
+        var popularMoviesData = await getLastMovies();
         const existMovies = await Movie.find({});
 
         if (!popularMoviesData) {
@@ -124,6 +123,7 @@ const createPopularMovies = async (req, res) => {
 
         return res.status(200).json({ success: true, data: newMovies });
       } catch (error) {
+        console.log(error)
         return res.status(400).json({ success: false, message: error.message });
       }
 }
@@ -320,7 +320,7 @@ module.exports = {
     getAllMovies, 
     updateMovie, 
     deleteMovie, 
-    createPopularMovies, 
+    createLastMovies, 
     addRatingMovie, 
     updateRatingMovie, 
     removeRatingMovie,

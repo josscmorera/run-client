@@ -1,4 +1,5 @@
 const Axios  = require("axios")
+const { formatDate } = require("./functions")
 
 const API_KEY = process.env.TMDB_API_KEY
 const API_BASE = 'https://api.themoviedb.org/3'
@@ -6,8 +7,7 @@ const API_BASE = 'https://api.themoviedb.org/3'
 const API_MOVIE_EN = `${API_BASE}/movie/{{id}}?language=en&append_to_response=credits&api_key=${API_KEY}`
 const API_MOVIE_VIDEOS = `${API_BASE}/movie/{{id}}/videos?&api_key=${API_KEY}`
 
-const API_POPULAR_MOVIES = `${API_BASE}/discover/movie?include_video=true&language=en-US&page=1&sort_by=popularity.desc&api_key=${API_KEY}`
-
+const API_POPULAR_MOVIES = `${API_BASE}/movie/now_playing?include_adult=false&include_video=true&language=en-US&page=1&sort_by=primary_release_date.desc&release_date.lte=${formatDate(new Date())}&api_key=${API_KEY}`
 
  const getDataFilm = async (tmdbId) => {
   try {
@@ -47,14 +47,22 @@ const prepareTrailer = videos => {
   return newVideos[0] ? newVideos[0] : ''
 }
 
-const getPopularMovies = async () => {
+const getLastMovies = async () => {
   try {
     const data = await Axios.get(API_POPULAR_MOVIES)
-    return await Promise.all( data.data.results.map(async item => getDataFilm(item.id)))
+    const promises = await Promise.all( data.data.results.map(async item => getDataFilm(item.id)))
+    let filter = promises.filter(it => it.posterImage)
+    if (filter.length < 3) {
+      const data2 = await Axios.get(API_POPULAR_MOVIES.replace('page=1','page=2'))
+      const promises2 = await Promise.all( data2.data.results.map(async item => getDataFilm(item.id)))
+      filter = [...filter,promises2.filter(it => it.posterImage)]
+
+    }
+    return filter
   } catch (error) {
     console.error('Error Popular Movies', error)
     throw error
   }
 }
 
-module.exports = { getDataFilm, getPopularMovies };
+module.exports = { getDataFilm, getLastMovies };

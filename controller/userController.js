@@ -80,8 +80,6 @@ const addMovieFavorite = async (req, res) => {
         const decodedToken = res.locals.decodedToken
         const findUser = await User.findOne({_id: decodedToken.id})
 
-        console.log(findUser)
-
         const existFavorite = findUser.favorites.find(favorite => favorite === movieId)
 
         if(existFavorite){
